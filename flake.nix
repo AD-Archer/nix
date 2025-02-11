@@ -35,20 +35,21 @@
         enable = true;  # Changed from enabled to enable
         brews = [
           "mas"
+          "node"
+          "python@3.13"
+          "pipx"
+
+
         ];
         casks = [  # Fixed from casts to casks
           "cheatsheet"
           "altserver"
           "malwarebytes"
           "zen-browser"
-          "python@3.13"
-          "pipx"
-          "node"
           "mist"
           "bluestacks"
-          "wireshark"
           "vlc"
-          "obs-studio"
+          "obs"
           "notion"
           "latest"
           "cleanmymac"
