@@ -1,3 +1,5 @@
+#darwin-rebuild switch --flake ~/nix#mac
+
 {
   description = "My Default system flake";
 
@@ -76,6 +78,7 @@
         pkgs.zoom-us
         pkgs.discord
         pkgs.appcleaner
+        pkgs.ollama
       ];
 
       system.activationScripts.applications = {
