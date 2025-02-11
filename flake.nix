@@ -69,6 +69,39 @@
       security.pam.enableSudoTouchIdAuth = true;
     };
 
+    homebrew = {
+      enabled = true;
+      brews=[
+        "mas"
+        ];
+      casts = [
+      "cheatsheet"
+      "altserver"
+      "malwarebytes"
+      "zen-browser"
+      "python@3.13"
+      "pipx"
+      "node"
+      "mist"
+      "bluestacks"
+      "wireshark"
+      "vlc"
+      "obs-studio"
+      "notion"
+      "latest"
+      "cleanmymac"
+      "the-unarchiver"
+            
+      ];
+      onActivation.autoUpdate = true; #enables automatic updates for homebrew
+      onActivation.cleanup = "zap"; #makes sure that only the things listed are installed and removes anything not from this list
+    };
+# Mac App Store apps
+      homebrew.masApps = {
+        "AnkiApp Flashcards" = 1366312254;
+        "eero" = 1498025513;
+      };
+
   in {
     darwinConfigurations.mac = nix-darwin.lib.darwinSystem {
       inherit system;
