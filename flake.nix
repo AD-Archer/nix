@@ -51,7 +51,6 @@
           "obs"
           "notion"
           "latest"
-          "cleanmymac"
           "the-unarchiver"
           "qbittorrent"
           "tailscale"
