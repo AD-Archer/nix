@@ -53,12 +53,19 @@
           "latest"
           "cleanmymac"
           "the-unarchiver"
+          "qbittorrent"
+          "tailscale"
+          "capcut"
+          "whisky"
         ];
         onActivation.autoUpdate = true;
         onActivation.cleanup = "zap";
         masApps = {
           "AnkiApp Flashcards" = 1366312254;
           "eero" = 1498025513;
+          "Slack" = 803453959;
+          
+
         };
       };
 
