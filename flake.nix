@@ -45,7 +45,6 @@
           "cheatsheet"
           "altserver"
           "malwarebytes"
-          "zen-browser"
           "mist"
           "vlc"
           "obs"
@@ -54,7 +53,6 @@
           "the-unarchiver"
           "qbittorrent"
           "tailscale"
-          "capcut"
           "whisky"
         ];
         onActivation.autoUpdate = true;
