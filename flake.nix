@@ -47,7 +47,6 @@
           "malwarebytes"
           "zen-browser"
           "mist"
-          "bluestacks"
           "vlc"
           "obs"
           "notion"
