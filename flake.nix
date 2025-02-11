@@ -12,6 +12,8 @@
     system = "aarch64-darwin"; # Define the system architecture
     pkgs = nixpkgs.legacyPackages.${system};
     configuration = { pkgs, config, ... }: {
+
+      nixpkgs.config.allowUnfree = true;
       environment.systemPackages = [
         pkgs.neovim
         pkgs.neofetch
@@ -19,15 +21,18 @@
         pkgs.neofetch
         pkgs.curl
         pkgs.mkalias
+        pkgs.spotify
+        pkgs.raycast
+        pkgs.vscode
+        pkgs.zoom-us
+        pkgs.discord
+        pkgs.appcleaner
 
 
 
 
-        # # pkgs.ghostty
-        # pkgs.zoom-us
-        # pkgs.obs-studio
-        # pkgs.raycast
-        # pkgs.upscayl
+
+
       ];
 
 
