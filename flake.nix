@@ -40,6 +40,10 @@
           "node"
           "python@3.13"
           "pipx"
+          "zsh-completions"
+          "neovim"
+          "git"
+          "curl"
 
 
         ];
@@ -55,7 +59,7 @@
           "the-unarchiver"
           "qbittorrent"
           "tailscale"
-          "whisky"
+          "ghostty"
         ];
         onActivation.autoUpdate = true;
         onActivation.cleanup = "zap";
@@ -71,8 +75,6 @@
       environment.systemPackages = [
         pkgs.neovim
         pkgs.neofetch
-        pkgs.git
-        pkgs.curl
         pkgs.spotify
         pkgs.vscode
         pkgs.zoom-us
@@ -99,6 +101,16 @@
             ${pkgs.mkalias}/bin/mkalias "$src" "/Applications/Nix Apps/$app_name"
           done
         '';
+      };
+
+    system.defaults = {
+        dock.autohide = true;
+        # dock.position = "left";
+        # visuals.theme = "dark";
+        finder.AppleShowAllExtensions = true;
+        loginwindow.LoginwindowText = "Archer's Macbook 215-437-2912";
+        screencapture.location = "~/Pictures/screenshots";
+        screensaver.askForPasswordDelay = 10;
       };
 
       nix.settings.experimental-features = "nix-command flakes";
