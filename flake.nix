@@ -26,8 +26,10 @@
 
   outputs = { self, nix-darwin, nixpkgs, nix-homebrew, homebrew-core, homebrew-cask, homebrew-bundle, ... }:
   let
-    system = "aarch64-darwin";
-    pkgs = nixpkgs.legacyPackages.${system};
+    darwinSystem = "aarch64-darwin";
+    linuxSystem = "x86_64-linux";
+
+    pkgs = nixpkgs.legacyPackages.${darwinSystem};
 
     configModule = { config, pkgs, ... }: {
       nixpkgs.config.allowUnfree = true;
@@ -122,7 +124,7 @@
 
   in {
     darwinConfigurations.mac = nix-darwin.lib.darwinSystem {
-      inherit system;
+      inherit darwinSystem;
       modules = [
         configModule
         nix-homebrew.darwinModules.nix-homebrew
@@ -142,9 +144,23 @@
       ];
     };
 
-    apps.${system}.darwin-rebuild = {
+    apps.${darwinSystem}.darwin-rebuild = {
       type = "app";
-      program = "${nix-darwin.legacyPackages.${system}.darwin-rebuild}/bin/darwin-rebuild";
+      program = "${nix-darwin.legacyPackages.${darwinSystem}.darwin-rebuild}/bin/darwin-rebuild";
+    };
+
+    nixosConfigurations.arch = nixpkgs.lib.nixosSystem {
+      system = linuxSystem;
+      modules = [
+        ./nixos/arch.nix
+      ];
+    };
+
+    nixosConfigurations.ubuntu-server = nixpkgs.lib.nixosSystem {
+      system = linuxSystem;
+      modules = [
+        ./nixos/server.nix
+      ];
     };
   };
 }
