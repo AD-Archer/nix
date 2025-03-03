@@ -52,6 +52,44 @@
         fi
       '';
 
+      # Sketchybar setup script
+      system.activationScripts.postActivation.text = ''
+        # Set up Sketchybar configuration if it doesn't exist
+        if [ ! -d "$HOME/.config/sketchybar" ]; then
+          echo "Setting up Sketchybar configuration..."
+          mkdir -p "$HOME/.config/sketchybar/plugins"
+          
+          # Copy example configuration
+          if [ -d "/opt/homebrew/opt/sketchybar" ]; then
+            cp "/opt/homebrew/opt/sketchybar/share/sketchybar/examples/sketchybarrc" "$HOME/.config/sketchybar/sketchybarrc"
+            cp -r "/opt/homebrew/opt/sketchybar/share/sketchybar/examples/plugins/" "$HOME/.config/sketchybar/plugins/"
+          elif [ -d "/usr/local/opt/sketchybar" ]; then
+            cp "/usr/local/opt/sketchybar/share/sketchybar/examples/sketchybarrc" "$HOME/.config/sketchybar/sketchybarrc"
+            cp -r "/usr/local/opt/sketchybar/share/sketchybar/examples/plugins/" "$HOME/.config/sketchybar/plugins/"
+          fi
+          
+          # Make plugins executable
+          find "$HOME/.config/sketchybar/plugins" -type f -exec chmod +x {} \;
+          
+          # Add shebang line to sketchybarrc if it doesn't have one
+          if [ -f "$HOME/.config/sketchybar/sketchybarrc" ]; then
+            if ! grep -q "^#!/bin/bash" "$HOME/.config/sketchybar/sketchybarrc"; then
+              sed -i.bak '1i\
+#!/bin/bash
+' "$HOME/.config/sketchybar/sketchybarrc"
+              rm -f "$HOME/.config/sketchybar/sketchybarrc.bak"
+            fi
+          fi
+        else
+          echo "Sketchybar configuration already exists. Skipping setup."
+        fi
+        
+        # Note: We don't start Sketchybar here because the activation script runs as root
+        # and Homebrew should not be run as root. Instead, use the sb-restart alias
+        # after the system rebuild is complete.
+        echo "NOTE: To start Sketchybar, run 'brew services start sketchybar' after the system rebuild is complete."
+      '';
+
       # Homebrew configuration with all packages consolidated here
       homebrew = {
         enable = true;
@@ -64,6 +102,10 @@
           brewfile = true;
           lockfiles = true;
         };
+        taps = [
+          "FelixKratz/formulae"
+          # "homebrew/cask-fonts" # This tap is deprecated according to Homebrew
+        ];
         brews = [
           # Development tools
           "mas"
@@ -89,6 +131,8 @@
           "rsync"
           "neofetch"
           "ollama"
+          # Sketchybar and dependencies
+          "sketchybar"
         ];
         casks = [
           # Utilities
@@ -111,6 +155,9 @@
           "spotify"
           "zoom"
           "discord"
+          # Fonts for Sketchybar - using direct cask names without the tap prefix
+          "homebrew/cask-fonts/font-hack-nerd-font"
+          "sf-symbols"    # Moving sf-symbols from brews to casks where it belongs
         ];
         masApps = {
           "AnkiApp Flashcards" = 1366312254;
@@ -195,6 +242,18 @@
           "com.apple.keyboard.fnState" = true;
         };
         
+        # Menu bar settings - hide the default menu bar for Sketchybar
+        menuExtraClock.Show24Hour = false;
+        menuExtraClock.ShowSeconds = false;
+        
+        # For macOS Sonoma and newer
+        # controlCenter.AutoHide = true;  # This option is not supported in your version of nix-darwin
+        
+        # Note: To hide the default macOS menu bar, you need to do this manually:
+        # For macOS Sonoma: System Settings -> Control Center -> Automatically hide and show the menu bar -> Always
+        # For macOS Ventura: System Settings -> Desktop & Dock -> Automatically hide and show the menu bar -> Always
+        # For Pre-Ventura: System Preferences -> Dock & Menu Bar -> Automatically hide and show the menu bar (checked)
+        
         loginwindow.LoginwindowText = "Archer's Macbook 215-437-2912";
         screencapture.location = "~/Pictures/screenshots";
         screensaver.askForPasswordDelay = 10;
@@ -213,16 +272,22 @@
             auto_balance = "on";
             window_placement = "second_child";
             window_gap = 10;
-            top_padding = 10;
+            top_padding = 32; # Increased to accommodate Sketchybar
             bottom_padding = 10;
             left_padding = 10;
             right_padding = 10;
+            external_bar = "all:32:0"; # Format is "main:top:bottom", this reserves space for Sketchybar
           };
         };
         skhd = {
           enable = false; # Set to true if you want keyboard shortcuts for yabai
           package = pkgs.skhd;
         };
+        # Sketchybar will be managed by Homebrew services instead
+        # sketchybar = {
+        #   enable = true;
+        #   package = pkgs.sketchybar;
+        # };
       };
 
       # Fonts - updated to use the new nerd-fonts namespace structure
@@ -268,6 +333,11 @@
         gc = "git commit";
         gp = "git push";
         gpl = "git pull";
+        # Sketchybar aliases
+        sb-restart = "brew services restart sketchybar";
+        sb-start = "brew services start sketchybar";
+        sb-stop = "brew services stop sketchybar";
+        sb-edit = "$EDITOR ~/.config/sketchybar/sketchybarrc";
       };
       
       # Powerlevel10k ZSH theme configuration
