@@ -1,14 +1,20 @@
 #darwin-rebuild switch --flake ~/nix#mac
 
 {
-  description = "My Default system flake";
+  description = "My macbook flake";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nix-darwin.url = "github:LnL7/nix-darwin/master";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     homebrew-core = {
       url = "github:homebrew/homebrew-core";
@@ -24,20 +30,42 @@
     };
   };
 
-  outputs = { self, nix-darwin, nixpkgs, nix-homebrew, homebrew-core, homebrew-cask, homebrew-bundle, ... }:
+  outputs = { self, nixpkgs, nix-darwin, nix-homebrew, homebrew-core, homebrew-cask, homebrew-bundle, home-manager, ... }:
   let
-    darwinSystem = "aarch64-darwin";
+    system = "aarch64-darwin";
     linuxSystem = "x86_64-linux";
 
-    pkgs = nixpkgs.legacyPackages.${darwinSystem};
+    pkgs = nixpkgs.legacyPackages.${system};
 
     configModule = { config, pkgs, ... }: {
       nixpkgs.config.allowUnfree = true;
 
-      # Homebrew configuration moved inside the module
+      # Custom activation script to check for Homebrew before installation
+      system.activationScripts.preActivation.text = ''
+        # Check if Homebrew is already installed
+        if [ -f "/opt/homebrew/bin/brew" ] || [ -f "/usr/local/bin/brew" ]; then
+          echo "Homebrew is already installed. Skipping installation."
+          export HOMEBREW_ALREADY_INSTALLED=1
+        else
+          echo "Homebrew not found. Will proceed with installation."
+          export HOMEBREW_ALREADY_INSTALLED=0
+        fi
+      '';
+
+      # Homebrew configuration with all packages consolidated here
       homebrew = {
-        enable = true;  # Changed from enabled to enable
+        enable = true;
+        onActivation = {
+          autoUpdate = true;
+          cleanup = "zap"; # Removes all unmanaged homebrew packages
+          upgrade = true;
+        };
+        global = {
+          brewfile = true;
+          lockfiles = true;
+        };
         brews = [
+          # Development tools
           "mas"
           "node"
           "python@3.13"
@@ -46,10 +74,25 @@
           "neovim"
           "git"
           "curl"
-
-
+          "jq"
+          "fd"
+          "fzf"
+          "bat"
+          "exa"
+          "htop"
+          "tmux"
+          "gh"           # GitHub CLI
+          "ffmpeg"
+          "ripgrep"
+          "btop"
+          "tree"
+          "watch"
+          "rsync"
+          "neofetch"
+          "ollama"
         ];
-        casks = [  # Fixed from casts to casks
+        casks = [
+          # Utilities
           "cheatsheet"
           "altserver"
           "malwarebytes"
@@ -62,29 +105,31 @@
           "qbittorrent"
           "tailscale"
           "ghostty"
+          "raycast"       # Productivity
+          "stats"         # System monitoring
+          "appcleaner"    # App uninstaller
+          "balenaetcher"  # USB image writer
+          "visual-studio-code" # Code editor
+          "docker"        # Containerization
+          "spotify"
+          "zoom"
+          "discord"
         ];
-        onActivation.autoUpdate = true;
-        onActivation.cleanup = "zap";
         masApps = {
           "AnkiApp Flashcards" = 1366312254;
           "eero" = 1498025513;
           "Slack" = 803453959;
-          
-
         };
       };
 
+      # System packages installed via Nix - keeping only what's necessary for system functionality
+      # and not available via Homebrew
       environment.systemPackages = [
-        pkgs.neovim
-        pkgs.neofetch
-        pkgs.spotify
-        pkgs.vscode
-        pkgs.zoom-us
-        pkgs.discord
-        pkgs.appcleaner
-        pkgs.ollama
+        # Only keeping essential Nix packages that are needed for system functionality
+        pkgs.mkalias  # Needed for application linking
       ];
 
+      # Improved application linking
       system.activationScripts.applications = {
         text = let
           env = pkgs.buildEnv {
@@ -105,48 +150,161 @@
         '';
       };
 
-    system.defaults = {
-        dock.autohide = true;
-        # dock.position = "left";
-        # visuals.theme = "dark";
-        finder.AppleShowAllExtensions = true;
+      # Enhanced system defaults for better Mac experience
+      system.defaults = {
+        # Dock settings
+        dock = {
+          autohide = true;
+          show-recents = false;
+          mru-spaces = false;
+          minimize-to-application = true;
+          orientation = "bottom";
+          tilesize = 48;
+        };
+        
+        # Finder settings
+        finder = {
+          AppleShowAllExtensions = true;
+          FXEnableExtensionChangeWarning = false;
+          QuitMenuItem = true;
+          _FXShowPosixPathInTitle = true;
+          CreateDesktop = true;
+          ShowPathbar = true;
+          ShowStatusBar = true;
+        };
+        
+        # Trackpad settings
+        trackpad = {
+          Clicking = true;
+          TrackpadThreeFingerDrag = true;
+          TrackpadRightClick = true;
+        };
+        
+        # General UI/UX
+        NSGlobalDomain = {
+          AppleKeyboardUIMode = 3;
+          ApplePressAndHoldEnabled = false;
+          InitialKeyRepeat = 15;
+          KeyRepeat = 2;
+          NSAutomaticCapitalizationEnabled = false;
+          NSAutomaticDashSubstitutionEnabled = false;
+          NSAutomaticPeriodSubstitutionEnabled = false;
+          NSAutomaticQuoteSubstitutionEnabled = false;
+          NSAutomaticSpellingCorrectionEnabled = false;
+          NSNavPanelExpandedStateForSaveMode = true;
+          NSNavPanelExpandedStateForSaveMode2 = true;
+          "com.apple.swipescrolldirection" = false;
+          "com.apple.keyboard.fnState" = true;
+        };
+        
         loginwindow.LoginwindowText = "Archer's Macbook 215-437-2912";
         screencapture.location = "~/Pictures/screenshots";
         screensaver.askForPasswordDelay = 10;
       };
 
-      nix.settings.experimental-features = "nix-command flakes";
+      # System services
+      services = {
+        openssh.enable = true;
+        nix-daemon.enable = true;
+        yabai = {
+          enable = false; # Set to true if you want a tiling window manager
+          package = pkgs.yabai;
+          enableScriptingAddition = true;
+          config = {
+            layout = "bsp";
+            auto_balance = "on";
+            window_placement = "second_child";
+            window_gap = 10;
+            top_padding = 10;
+            bottom_padding = 10;
+            left_padding = 10;
+            right_padding = 10;
+          };
+        };
+        skhd = {
+          enable = false; # Set to true if you want keyboard shortcuts for yabai
+          package = pkgs.skhd;
+        };
+      };
+
+      # Fonts - updated to use the new nerd-fonts namespace structure
+      fonts = {
+        packages = [
+          pkgs.jetbrains-mono
+          pkgs.fira-code
+          pkgs.nerd-fonts.fira-code
+          pkgs.noto-fonts
+          pkgs.noto-fonts-emoji
+        ];
+      };
+
+      # Nix settings - updated to use the correct optimization setting
+      nix = {
+        settings = {
+          experimental-features = "nix-command flakes";
+          trusted-users = ["root" "archer"];
+        };
+        optimise = {
+          automatic = true;
+        };
+        gc = {
+          automatic = true;
+          interval = { Day = 7; };
+          options = "--delete-older-than 30d";
+        };
+      };
+
+      # System configuration
       system.configurationRevision = self.rev or self.dirtyRev or null;
       system.stateVersion = 6;
-      services.openssh.enable = true;
+      
+      # Security
       security.pam.enableSudoTouchIdAuth = true;
     };
 
   in {
-    darwinConfigurations.mac = nix-darwin.lib.darwinSystem {
-      inherit darwinSystem;
-      modules = [
-        configModule
-        nix-homebrew.darwinModules.nix-homebrew
-        {
-          nix-homebrew = {
-            enable = true;
-            enableRosetta = true;
-            user = "archer";
-            autoMigrate = true;
-            taps = {
-              "homebrew/core" = homebrew-core;
-              "homebrew/cask" = homebrew-cask;
-              "homebrew/bundle" = homebrew-bundle;
+    darwinConfigurations = {
+      mac = nix-darwin.lib.darwinSystem {
+        system = system;
+        modules = [
+          configModule
+          # Temporarily disable nix-homebrew to avoid conflicts with existing installation
+          # nix-homebrew.darwinModules.nix-homebrew
+          # {
+          #   nix-homebrew = {
+          #     enable = true;
+          #     enableRosetta = true;
+          #     user = "archer";
+          #     autoMigrate = true;
+          #     mutableTaps = false;
+          #     taps = {
+          #       "homebrew/core" = homebrew-core;
+          #       "homebrew/cask" = homebrew-cask;
+          #       "homebrew/bundle" = homebrew-bundle;
+          #     };
+          #   };
+          # }
+          # Simplified approach without home-manager to avoid username conflicts
+          {
+            # Basic shell configuration without home-manager
+            environment.shellAliases = {
+              ll = "ls -la";
+              update = "darwin-rebuild switch --flake ~/nix#mac";
+              g = "git";
+              gs = "git status";
+              gc = "git commit";
+              gp = "git push";
+              gpl = "git pull";
             };
-          };
-        }
-      ];
+          }
+        ];
+      };
     };
 
-    apps.${darwinSystem}.darwin-rebuild = {
+    # Expose the darwin-rebuild command as a flake app
+    apps.aarch64-darwin.darwin-rebuild = {
       type = "app";
-      program = "${nix-darwin.legacyPackages.${darwinSystem}.darwin-rebuild}/bin/darwin-rebuild";
+      program = "${nix-darwin.packages.aarch64-darwin.darwin-rebuild}/bin/darwin-rebuild";
     };
 
     nixosConfigurations.arch = nixpkgs.lib.nixosSystem {
