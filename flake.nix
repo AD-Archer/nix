@@ -78,7 +78,6 @@
           "fd"
           "fzf"
           "bat"
-          "exa"
           "htop"
           "tmux"
           "gh"           # GitHub CLI
@@ -109,8 +108,6 @@
           "stats"         # System monitoring
           "appcleaner"    # App uninstaller
           "balenaetcher"  # USB image writer
-          "visual-studio-code" # Code editor
-          "docker"        # Containerization
           "spotify"
           "zoom"
           "discord"
@@ -124,9 +121,10 @@
 
       # System packages installed via Nix - keeping only what's necessary for system functionality
       # and not available via Homebrew
-      environment.systemPackages = [
+      environment.systemPackages = with pkgs; [
         # Only keeping essential Nix packages that are needed for system functionality
-        pkgs.mkalias  # Needed for application linking
+        mkalias  # Needed for application linking
+        zsh-powerlevel10k  # For Powerlevel10k ZSH theme
       ];
 
       # Improved application linking
@@ -235,7 +233,7 @@
           pkgs.nerd-fonts.fira-code
           pkgs.noto-fonts
           pkgs.noto-fonts-emoji
-        ];
+        ] ++ (builtins.filter pkgs.lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts));
       };
 
       # Nix settings - updated to use the correct optimization setting
@@ -260,6 +258,37 @@
       
       # Security
       security.pam.enableSudoTouchIdAuth = true;
+
+      # Basic shell configuration without home-manager
+      environment.shellAliases = {
+        ll = "ls -la";
+        update = "darwin-rebuild switch --flake ~/nix#mac";
+        g = "git";
+        gs = "git status";
+        gc = "git commit";
+        gp = "git push";
+        gpl = "git pull";
+      };
+      
+      # Powerlevel10k ZSH theme configuration
+      programs.zsh = {
+        enable = true;
+        promptInit = ''
+          # Source powerlevel10k
+          source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
+          # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
+          [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+        '';
+        interactiveShellInit = ''
+          # p10k instant prompt
+          if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+            source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+          fi
+          
+          # Enable powerlevel10k instant prompt
+          export ZSH_THEME="powerlevel10k/powerlevel10k"
+        '';
+      };
     };
 
   in {
@@ -295,6 +324,26 @@
               gc = "git commit";
               gp = "git push";
               gpl = "git pull";
+            };
+            
+            # Powerlevel10k ZSH theme configuration
+            programs.zsh = {
+              enable = true;
+              promptInit = ''
+                # Source powerlevel10k
+                source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
+                # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
+                [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+              '';
+              interactiveShellInit = ''
+                # p10k instant prompt
+                if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+                  source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+                fi
+                
+                # Enable powerlevel10k instant prompt
+                export ZSH_THEME="powerlevel10k/powerlevel10k"
+              '';
             };
           }
         ];
