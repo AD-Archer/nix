@@ -54,40 +54,28 @@
 
       # Sketchybar setup script
       system.activationScripts.postActivation.text = ''
-        # Set up Sketchybar configuration if it doesn't exist
-        if [ ! -d "$HOME/.config/sketchybar" ]; then
-          echo "Setting up Sketchybar configuration..."
-          mkdir -p "$HOME/.config/sketchybar/plugins"
-          
-          # Copy example configuration
-          if [ -d "/opt/homebrew/opt/sketchybar" ]; then
-            cp "/opt/homebrew/opt/sketchybar/share/sketchybar/examples/sketchybarrc" "$HOME/.config/sketchybar/sketchybarrc"
-            cp -r "/opt/homebrew/opt/sketchybar/share/sketchybar/examples/plugins/" "$HOME/.config/sketchybar/plugins/"
-          elif [ -d "/usr/local/opt/sketchybar" ]; then
-            cp "/usr/local/opt/sketchybar/share/sketchybar/examples/sketchybarrc" "$HOME/.config/sketchybar/sketchybarrc"
-            cp -r "/usr/local/opt/sketchybar/share/sketchybar/examples/plugins/" "$HOME/.config/sketchybar/plugins/"
-          fi
-          
-          # Make plugins executable
-          find "$HOME/.config/sketchybar/plugins" -type f -exec chmod +x {} \;
-          
-          # Add shebang line to sketchybarrc if it doesn't have one
-          if [ -f "$HOME/.config/sketchybar/sketchybarrc" ]; then
-            if ! grep -q "^#!/bin/bash" "$HOME/.config/sketchybar/sketchybarrc"; then
-              sed -i.bak '1i\
-#!/bin/bash
-' "$HOME/.config/sketchybar/sketchybarrc"
-              rm -f "$HOME/.config/sketchybar/sketchybarrc.bak"
-            fi
-          fi
-        else
-          echo "Sketchybar configuration already exists. Skipping setup."
+        # Remove Sketchybar configuration files
+        if [ -d "$HOME/.config/sketchybar" ]; then
+          echo "Removing Sketchybar configuration..."
+          rm -rf "$HOME/.config/sketchybar"
         fi
         
-        # Note: We don't start Sketchybar here because the activation script runs as root
-        # and Homebrew should not be run as root. Instead, use the sb-restart alias
-        # after the system rebuild is complete.
-        echo "NOTE: To start Sketchybar, run 'brew services start sketchybar' after the system rebuild is complete."
+        # Stop Sketchybar service if it's running and uninstall it
+        if command -v brew >/dev/null 2>&1; then
+          if brew services list | grep -q sketchybar; then
+            echo "Stopping Sketchybar service..."
+            brew services stop sketchybar
+          fi
+          
+          if brew list | grep -q sketchybar; then
+            echo "Uninstalling Sketchybar..."
+            brew uninstall sketchybar
+          fi
+        fi
+        
+        # Reset menu bar settings to default
+        defaults delete com.apple.menuextra 2>/dev/null || true
+        killall SystemUIServer 2>/dev/null || true
       '';
 
       # Homebrew configuration with all packages consolidated here
@@ -103,7 +91,7 @@
           lockfiles = true;
         };
         taps = [
-          "FelixKratz/formulae"
+          # "FelixKratz/formulae" # Removed Sketchybar tap
           # "homebrew/cask-fonts" # This tap is deprecated according to Homebrew
         ];
         brews = [
@@ -131,8 +119,7 @@
           "rsync"
           "neofetch"
           "ollama"
-          # Sketchybar and dependencies
-          "sketchybar"
+          # Removed Sketchybar
         ];
         casks = [
           # Utilities
@@ -155,9 +142,8 @@
           "spotify"
           "zoom"
           "discord"
-          # Fonts for Sketchybar - using direct cask names without the tap prefix
-          "homebrew/cask-fonts/font-hack-nerd-font"
-          "sf-symbols"    # Moving sf-symbols from brews to casks where it belongs
+          # Removed Sketchybar fonts
+          "sf-symbols"    # Keeping SF Symbols as it's generally useful
         ];
         masApps = {
           "AnkiApp Flashcards" = 1366312254;
@@ -242,17 +228,17 @@
           "com.apple.keyboard.fnState" = true;
         };
         
-        # Menu bar settings - hide the default menu bar for Sketchybar
+        # Menu bar settings - restored to show the default menu bar
         menuExtraClock.Show24Hour = false;
         menuExtraClock.ShowSeconds = false;
         
-        # For macOS Sonoma and newer
-        # controlCenter.AutoHide = true;  # This option is not supported in your version of nix-darwin
+        # For macOS Sonoma and newer - uncomment if you're on Sonoma
+        # controlCenter.AutoHide = false;
         
-        # Note: To hide the default macOS menu bar, you need to do this manually:
-        # For macOS Sonoma: System Settings -> Control Center -> Automatically hide and show the menu bar -> Always
-        # For macOS Ventura: System Settings -> Desktop & Dock -> Automatically hide and show the menu bar -> Always
-        # For Pre-Ventura: System Preferences -> Dock & Menu Bar -> Automatically hide and show the menu bar (checked)
+        # Note: If you manually hid the menu bar before, you'll need to manually show it again:
+        # For macOS Sonoma: System Settings -> Control Center -> Automatically hide and show the menu bar -> Never
+        # For macOS Ventura: System Settings -> Desktop & Dock -> Automatically hide and show the menu bar -> Never
+        # For Pre-Ventura: System Preferences -> Dock & Menu Bar -> Automatically hide and show the menu bar (unchecked)
         
         loginwindow.LoginwindowText = "Archer's Macbook 215-437-2912";
         screencapture.location = "~/Pictures/screenshots";
@@ -272,11 +258,11 @@
             auto_balance = "on";
             window_placement = "second_child";
             window_gap = 10;
-            top_padding = 32; # Increased to accommodate Sketchybar
+            top_padding = 10;
             bottom_padding = 10;
             left_padding = 10;
             right_padding = 10;
-            external_bar = "all:32:0"; # Format is "main:top:bottom", this reserves space for Sketchybar
+            external_bar = "off"; # Menu bar is now handled by macOS
           };
         };
         skhd = {
@@ -333,11 +319,7 @@
         gc = "git commit";
         gp = "git push";
         gpl = "git pull";
-        # Sketchybar aliases
-        sb-restart = "brew services restart sketchybar";
-        sb-start = "brew services start sketchybar";
-        sb-stop = "brew services stop sketchybar";
-        sb-edit = "$EDITOR ~/.config/sketchybar/sketchybarrc";
+        # Sketchybar aliases removed
       };
       
       # Powerlevel10k ZSH theme configuration
