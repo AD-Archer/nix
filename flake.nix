@@ -132,7 +132,8 @@
           "mist"
           "vlc"
           "obs"
-          "notion"
+
+          "obsidian"
           "latest"
           "the-unarchiver"
           "qbittorrent"
