@@ -101,6 +101,7 @@
           "python@3.13"
           "pipx"
           "zsh-completions"
+          "bitwarden-cli"
           "neovim"
           "git"
           "curl"
@@ -132,8 +133,7 @@
           "mist"
           "vlc"
           "obs"
-
-          "obsidian"
+          "bitwarden"
           "latest"
           "the-unarchiver"
           "qbittorrent"
