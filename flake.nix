@@ -136,7 +136,6 @@
           "bitwarden"
           "latest"
           "the-unarchiver"
-          "jellyfin-media-player"
           "qbittorrent"
           "tailscale"
           "ghostty"
