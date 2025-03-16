@@ -153,6 +153,7 @@
           "AnkiApp Flashcards" = 1366312254;
           "eero" = 1498025513;
           "Slack" = 803453959;
+          "jellyfin"= 1480192618;
         };
       };
 
