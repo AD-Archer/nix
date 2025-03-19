@@ -133,7 +133,6 @@
           "mist"
           "vlc"
           "obs"
-          "bitwarden"
           "latest"
           "the-unarchiver"
           "qbittorrent"
@@ -153,7 +152,7 @@
           "AnkiApp Flashcards" = 1366312254;
           "eero" = 1498025513;
           "Slack" = 803453959;
-          "jellyfin"= 1480192618;
+          "bitwarden"= 1352778147
         };
       };
 
