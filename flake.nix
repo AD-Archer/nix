@@ -149,10 +149,11 @@
           "sf-symbols"    # Keeping SF Symbols as it's generally useful
         ];
         masApps = {
-          "AnkiApp Flashcards" = 1366312254;
+          "AnkiApp-Flashcards" = 1366312254;
           "eero" = 1498025513;
           "Slack" = 803453959;
-          "bitwarden"= 1352778147
+          "bitwarden"= 1352778147;
+          "live-wallpapers"= 1552826194;
         };
       };
 
