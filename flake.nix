@@ -378,6 +378,23 @@ fi
           
           # Enable powerlevel10k instant prompt
           export ZSH_THEME="powerlevel10k/powerlevel10k"
+          
+          # Zim compatibility - ensure it doesn't interfere with p10k
+          if [[ -f "$HOME/.zim/zimfw.zsh" ]]; then
+            # Set ZIM_HOME only if it's not already set
+            : ''${ZIM_HOME:="$HOME/.zim"}
+            
+            # Load Zim after p10k instant prompt 
+            if [[ ! -o login ]]; then
+              source "$ZIM_HOME/zimfw.zsh"
+            fi
+          fi
+          
+          # Common helpful aliases
+          alias ls='ls --color=auto'
+          alias grep='grep --color=auto'
+          alias ..='cd ..'
+          alias ...='cd ../..'
         '';
       };
     };
@@ -434,6 +451,23 @@ fi
                 
                 # Enable powerlevel10k instant prompt
                 export ZSH_THEME="powerlevel10k/powerlevel10k"
+                
+                # Zim compatibility - ensure it doesn't interfere with p10k
+                if [[ -f "$HOME/.zim/zimfw.zsh" ]]; then
+                  # Set ZIM_HOME only if it's not already set
+                  : ''${ZIM_HOME:="$HOME/.zim"}
+                  
+                  # Load Zim after p10k instant prompt 
+                  if [[ ! -o login ]]; then
+                    source "$ZIM_HOME/zimfw.zsh"
+                  fi
+                fi
+                
+                # Common helpful aliases
+                alias ls='ls --color=auto'
+                alias grep='grep --color=auto'
+                alias ..='cd ..'
+                alias ...='cd ../..'
               '';
             };
           }
