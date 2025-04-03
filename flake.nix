@@ -1,5 +1,4 @@
-#darwin-rebuild switch --flake ~/nix#mac
-
+#VERBOSE=1 darwin-rebuild switch --flake '~/nix#mac'
 {
   description = "My macbook flake";
 
@@ -47,8 +46,16 @@
           echo "Homebrew is already installed. Skipping installation."
           export HOMEBREW_ALREADY_INSTALLED=1
         else
-          echo "Homebrew not found. Will proceed with installation."
+          echo "Homebrew not found. Installing Homebrew..."
           export HOMEBREW_ALREADY_INSTALLED=0
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          
+          # Make sure homebrew is in the PATH for the current script
+          if [ -f "/opt/homebrew/bin/brew" ]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+          elif [ -f "/usr/local/bin/brew" ]; then
+            eval "$(/usr/local/bin/brew shellenv)"
+          fi
         fi
       '';
 
@@ -111,91 +118,68 @@ fi
 ' >> "$HOME/.zshrc"
       '';
 
-      # Homebrew configuration with all packages consolidated here
-      homebrew = {
-        enable = true;
-        onActivation = {
-          autoUpdate = true;
-          cleanup = "zap"; # Removes all unmanaged homebrew packages
-          upgrade = true;
-        };
-        global = {
-          brewfile = true;
-          lockfiles = true;
-        };
-        taps = [
-          # "FelixKratz/formulae" # Removed Sketchybar tap
-          # "homebrew/cask-fonts" # This tap is deprecated according to Homebrew
-        ];
-        brews = [
-          # Development tools
-          "mas"
-          "node"
-          "python@3.13"
-          "pipx"
-          "zsh-completions"
-          "bitwarden-cli"
-          "neovim"
-          "git"
-          "curl"
-          "jq"
-          "fd"
-          "fzf"
-          "bat"
-          "htop"
-          "tmux"
-          "gh"           # GitHub CLI
-          "ffmpeg"
-          "ripgrep"
-          "btop"
-          "tree"
-          "go"
-          "lua"
-          "luarocks"
-          "watch"
-          "rsync"
-          "neofetch"
-          "ollama"
-          # Removed Sketchybar
-        ];
-        casks = [
-          # Utilities
-          "cheatsheet"
-          "altserver"
-          "malwarebytes"
-          "mist"
-          "vlc"
-          "ghostty"  
-          "obs"
-          "latest"
-          "the-unarchiver"
-          "qbittorrent"
-          "tailscale"
-          "ghostty"
-          "raycast"       # Productivity
-          "stats"         # System monitoring
-          "appcleaner"    # App uninstaller
-          "balenaetcher"  # USB image writer
-          "spotify"
-          "zoom"
-          "discord"
-          # Fonts for development
-          "font-jetbrains-mono-nerd-font"  # JetBrains Mono Nerd Font for NvChad
-          "sf-symbols"    # Keeping SF Symbols as it's generally useful
-        ];
-        masApps = {
-          "AnkiApp-Flashcards" = 1366312254;
-          "eero" = 1498025513;
-          "Slack" = 803453959;
-          "bitwarden"= 1352778147;
-          "live-wallpapers"= 1552826194;
-        };
+      # Disable the built-in homebrew module for now
+      homebrew.enable = false;
+      
+      # Add a manual script to set up Homebrew packages
+      system.activationScripts.homebrewManualSetup = {
+        text = ''
+          echo "===== Setting up Homebrew manually ====="
+          
+          # Ensure Homebrew is in PATH
+          if [ -f "/opt/homebrew/bin/brew" ]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+          elif [ -f "/usr/local/bin/brew" ]; then
+            eval "$(/usr/local/bin/brew shellenv)"
+          fi
+          
+          # Add taps
+          echo "Adding Homebrew taps..."
+          brew tap homebrew/core
+          brew tap homebrew/cask
+          brew tap homebrew/bundle
+          
+          # Create a manual Brewfile
+          BREWFILE="$HOME/.config/homebrew-manual/Brewfile"
+          mkdir -p "$(dirname "$BREWFILE")"
+          
+          cat > "$BREWFILE" << 'EOF'
+# Taps
+tap "homebrew/core"
+tap "homebrew/cask"
+tap "homebrew/bundle"
+
+# Brews (CLI tools)
+brew "git"
+brew "neovim"
+brew "mas"
+brew "node"
+brew "python"
+# Add other CLI tools as needed
+
+# Casks (GUI Applications)
+cask "cheatsheet"
+cask "rectangle"
+cask "visual-studio-code"
+# Add other applications as needed
+
+# Mac App Store
+mas "AnkiApp Flashcards", id: 1366312254
+# Add other App Store apps as needed
+EOF
+          
+          # Install packages manually using brew bundle
+          echo "Installing Homebrew packages from manual Brewfile..."
+          brew bundle install --file="$BREWFILE"
+          
+          echo "Manual Homebrew setup complete"
+        '';
+        deps = [];
       };
 
       # System packages installed via Nix - keeping only what's necessary for system functionality
       # and not available via Homebrew
       environment.systemPackages = with pkgs; [
-        # Only keeping essential Nix packages that are needed for system functionality
         mkalias  # Needed for application linking
         zsh-powerlevel10k  # For Powerlevel10k ZSH theme
         neovim  # Add Neovim through Nix to ensure it's available during activation
@@ -397,6 +381,24 @@ fi
           alias ...='cd ../..'
         '';
       };
+
+      # Add this to your system.activationScripts section
+      system.activationScripts.homebrewDebug = {
+        text = ''
+          echo "===== Debugging Homebrew Integration ====="
+          echo "Homebrew location: $(which brew)"
+          echo "Homebrew version: $(brew --version)"
+          mkdir -p $HOME/.config/homebrew-debug
+          # Save the environment variables for debugging
+          env | grep HOMEBREW > $HOME/.config/homebrew-debug/env.txt
+          # Check existing Homebrew directories
+          echo "Checking Homebrew directories:" >> $HOME/.config/homebrew-debug/dirs.txt
+          ls -la /opt/homebrew/Library >> $HOME/.config/homebrew-debug/dirs.txt 2>&1
+          ls -la /opt/homebrew/Library/Taps >> $HOME/.config/homebrew-debug/dirs.txt 2>&1
+          echo "Debug info saved to $HOME/.config/homebrew-debug/"
+        '';
+        deps = [];
+      };
     };
 
   in {
@@ -405,7 +407,7 @@ fi
         system = system;
         modules = [
           configModule
-          # Temporarily disable nix-homebrew to avoid conflicts with existing installation
+          # Comment out nix-homebrew to avoid conflicts with existing installation
           # nix-homebrew.darwinModules.nix-homebrew
           # {
           #   nix-homebrew = {
@@ -421,56 +423,6 @@ fi
           #     };
           #   };
           # }
-          # Simplified approach without home-manager to avoid username conflicts
-          {
-            # Basic shell configuration without home-manager
-            environment.shellAliases = {
-              ll = "ls -la";
-              update = "darwin-rebuild switch --flake ~/nix#mac";
-              g = "git";
-              gs = "git status";
-              gc = "git commit";
-              gp = "git push";
-              gpl = "git pull";
-            };
-            
-            # Powerlevel10k ZSH theme configuration
-            programs.zsh = {
-              enable = true;
-              promptInit = ''
-                # Source powerlevel10k
-                source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
-                # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
-                [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-              '';
-              interactiveShellInit = ''
-                # p10k instant prompt
-                if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
-                  source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
-                fi
-                
-                # Enable powerlevel10k instant prompt
-                export ZSH_THEME="powerlevel10k/powerlevel10k"
-                
-                # Zim compatibility - ensure it doesn't interfere with p10k
-                if [[ -f "$HOME/.zim/zimfw.zsh" ]]; then
-                  # Set ZIM_HOME only if it's not already set
-                  : ''${ZIM_HOME:="$HOME/.zim"}
-                  
-                  # Load Zim after p10k instant prompt 
-                  if [[ ! -o login ]]; then
-                    source "$ZIM_HOME/zimfw.zsh"
-                  fi
-                fi
-                
-                # Common helpful aliases
-                alias ls='ls --color=auto'
-                alias grep='grep --color=auto'
-                alias ..='cd ..'
-                alias ...='cd ../..'
-              '';
-            };
-          }
         ];
       };
     };
