@@ -40,7 +40,7 @@
     configModule = { config, pkgs, ... }: {
       nixpkgs.config.allowUnfree = true;
 
-      # Custom activation script to check for Homebrew before installation
+      # System activation scripts to check for Homebrew before installation
       system.activationScripts.preActivation.text = ''
         # Check if Homebrew is already installed
         if [ -f "/opt/homebrew/bin/brew" ] || [ -f "/usr/local/bin/brew" ]; then
@@ -52,7 +52,7 @@
         fi
       '';
 
-      # Sketchybar setup script
+      # Setup scripts for Sketchybar and NvChad
       system.activationScripts.postActivation.text = ''
         # Remove Sketchybar configuration files
         if [ -d "$HOME/.config/sketchybar" ]; then
@@ -76,6 +76,39 @@
         # Reset menu bar settings to default
         defaults delete com.apple.menuextra 2>/dev/null || true
         killall SystemUIServer 2>/dev/null || true
+        
+        # Create a separate script for NvChad setup that will run at first login
+        mkdir -p "$HOME/.config/nixpkgs"
+        cat > "$HOME/.config/nixpkgs/setup-nvchad.sh" << 'EOF'
+#!/bin/bash
+# Setup NvChad for Neovim if it's not already set up
+if [ ! -d "$HOME/.config/nvim" ] || [ ! -f "$HOME/.config/nvim/init.lua" ]; then
+  echo "Setting up NvChad configuration for Neovim..."
+  # Clean any existing neovim configs
+  rm -rf "$HOME/.config/nvim" 2>/dev/null || true
+  rm -rf "$HOME/.local/state/nvim" 2>/dev/null || true
+  rm -rf "$HOME/.local/share/nvim" 2>/dev/null || true
+  
+  # Clone NvChad repository
+  git clone -b v2.0 https://github.com/NvChad/NvChad "$HOME/.config/nvim" --depth 1
+  echo "NvChad has been installed. Launch nvim to complete setup."
+else
+  echo "NvChad configuration already exists."
+fi
+EOF
+        chmod +x "$HOME/.config/nixpkgs/setup-nvchad.sh"
+        
+        # Add script to run at shell initialization
+        grep -q "setup-nvchad" "$HOME/.zshrc" || echo '
+# Run NvChad setup script if nvim is available
+if command -v nvim >/dev/null 2>&1; then
+  if [ -f "$HOME/.config/nixpkgs/setup-nvchad.sh" ]; then
+    $HOME/.config/nixpkgs/setup-nvchad.sh
+    # Remove the line to prevent future runs
+    sed -i "" "/setup-nvchad/d" "$HOME/.zshrc"
+  fi
+fi
+' >> "$HOME/.zshrc"
       '';
 
       # Homebrew configuration with all packages consolidated here
@@ -132,6 +165,7 @@
           "malwarebytes"
           "mist"
           "vlc"
+          "ghostty"  
           "obs"
           "latest"
           "the-unarchiver"
@@ -145,7 +179,8 @@
           "spotify"
           "zoom"
           "discord"
-          # Removed Sketchybar fonts
+          # Fonts for development
+          "font-jetbrains-mono-nerd-font"  # JetBrains Mono Nerd Font for NvChad
           "sf-symbols"    # Keeping SF Symbols as it's generally useful
         ];
         masApps = {
@@ -163,6 +198,7 @@
         # Only keeping essential Nix packages that are needed for system functionality
         mkalias  # Needed for application linking
         zsh-powerlevel10k  # For Powerlevel10k ZSH theme
+        neovim  # Add Neovim through Nix to ensure it's available during activation
       ];
 
       # Improved application linking
@@ -274,11 +310,7 @@
           enable = false; # Set to true if you want keyboard shortcuts for yabai
           package = pkgs.skhd;
         };
-        # Sketchybar will be managed by Homebrew services instead
-        # sketchybar = {
-        #   enable = true;
-        #   package = pkgs.sketchybar;
-        # };
+       
       };
 
       # Fonts - updated to use the new nerd-fonts namespace structure
@@ -324,7 +356,9 @@
         gc = "git commit";
         gp = "git push";
         gpl = "git pull";
-        # Sketchybar aliases removed
+        # Neovim aliases
+        vim = "nvim";
+        nv = "nvim";
       };
       
       # Powerlevel10k ZSH theme configuration
