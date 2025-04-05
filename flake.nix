@@ -197,6 +197,7 @@ fi
           "Slack" = 803453959;
           "bitwarden"= 1352778147;
           "live-wallpapers"= 1552826194;
+          "wireguard"=1451685025;
         };
       };
 
