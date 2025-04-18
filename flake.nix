@@ -198,6 +198,7 @@ fi
           "bitwarden"= 1352778147;
           "live-wallpapers"= 1552826194;
           "wireguard"=1451685025;
+          "outlook"=985367838;
         };
       };
 
