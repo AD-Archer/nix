@@ -187,6 +187,8 @@ fi
           "spotify"
           "zoom"
           "discord"
+          "microsoft-teams"
+
           # Fonts for development
           "font-jetbrains-mono-nerd-font"  # JetBrains Mono Nerd Font for NvChad
           "sf-symbols"    # Keeping SF Symbols as it's generally useful
@@ -199,6 +201,8 @@ fi
           "live-wallpapers"= 1552826194;
           "wireguard"=1451685025;
           "outlook"=985367838;
+          "outlook"= 985367838;
+
         };
       };
 
