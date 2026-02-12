@@ -3,7 +3,11 @@
 {
   home.username = "arch";
   home.homeDirectory = "/home/arch";
-  programs.git.enable = true;
+  programs.git = {
+    enable = true;
+    userName = "ad-archer";
+    userEmail = "antonioarcher.dev@gmail.com";
+  };
   home.stateVersion = "25.05";
 
   programs.zsh = {
