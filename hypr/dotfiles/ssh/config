@@ -1,0 +1,19 @@
+Host 100.114.126.75
+    HostName 100.114.126.75
+    Port 22234
+    User arch
+
+Host cluster
+    HostName 100.64.172.107
+    User root
+Host server
+    HostName server
+    User arch
+    IdentityFile ~/.ssh/id_ed25519
+    #Port 22234
+Host llm
+    HostName 137.184.191.113
+    User xllm-user
+Host pc
+    HostName 192.168.4.37
+    User arch

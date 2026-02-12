@@ -1,0 +1,7 @@
+# Example config from swayidle man page
+swayidle -w \
+	timeout 300 'pgrep -x hyprlock >/dev/null || hyprlock' \
+	timeout 600 'hyprctl dispatch dpms off' \
+		resume 'hyprctl dispatch dpms on' \
+	timeout 1200 'systemctl suspend' \
+	before-sleep 'pgrep -x hyprlock >/dev/null || hyprlock'
