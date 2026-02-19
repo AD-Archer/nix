@@ -7,8 +7,7 @@
 
   services.flatpak.packages = [
     # Browsers
-    "app.zen_browser.zen"
-
+    
     # Communication
     "dev.vencord.Vesktop"
     "com.slack.Slack"
@@ -47,6 +46,10 @@
 
     # Video Conferencing
     "us.zoom.Zoom"
+
+    # Graveyard
+    #"app.zen_browser.zen"
+
   ];
   services.flatpak.overrides = {
     "io.github.qwersyk.Newelle" = {

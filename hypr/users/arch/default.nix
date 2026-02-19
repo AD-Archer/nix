@@ -99,7 +99,7 @@ in
       oc = "opencode";
       claer = "clear";
       qs = "command qs";
-      rebuild = "cd /etc/nixos && sudo nixos-rebuild switch";
+      rebuild = "cd /etc/nixos && sudo nixos-rebuild switch --flake .#hypr";
       update-qs = "/etc/nixos/scripts/update-quickshell.sh";
       update-system = "/etc/nixos/scripts/update-system.sh";
     };

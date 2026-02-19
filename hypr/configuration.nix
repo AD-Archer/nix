@@ -82,7 +82,7 @@ programs.steam = {
     epiphany  # GNOME Web
     gnome-software
     # Exclude GNOME apps we prefer not to use under Hyprland
-    gnome-calendar
+    gnome-text-editor
     gnome-maps
     geary  # GNOME Mail
     
@@ -95,6 +95,21 @@ programs.steam = {
   virtualisation.docker.enable = true;
 
   nixpkgs.config.allowUnfree = true;
+
+  # Fingerprint reader (fprintd)
+  services.fprintd.enable = true;
+  # Temporarily disable TOD (Time-of-Detection) driver autoloading so we don't
+  # fail evaluation when a driver isn't specified. If you know your sensor,
+  # re-enable TOD and set `services.fprintd.tod.driver` to the matching package
+  # (examples below).
+  services.fprintd.tod.enable = false;
+
+  # Pick the driver that matches your sensor if needed; common options (uncomment
+  # and set when you know the VID:PID or the supported driver):
+  # services.fprintd.tod.driver = pkgs.libfprint-2-tod1-goodix;
+  # services.fprintd.tod.driver = pkgs.libfprint-2-tod1-elan;
+  # services.fprintd.tod.driver = pkgs.libfprint-2-tod1-goodix-550a;
+
 
   # Allow specific insecure packages needed by some apps
   nixpkgs.config.permittedInsecurePackages = [

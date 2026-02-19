@@ -43,7 +43,7 @@
             backupFileExtension = "hm-bak";
           };
         }
-      ];
+        ];
     };
   };
 }
