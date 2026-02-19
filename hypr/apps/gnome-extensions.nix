@@ -11,7 +11,7 @@
     
     # Popular productivity
     caffeine
-    ulauncher-toggle
+    # ulauncher-toggle  # Not available in nixpkgs
     
     # Working alternatives
     quick-settings-tweaker

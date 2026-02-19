@@ -2,7 +2,7 @@
 
 {
   # Home Manager settings
-  home.stateVersion = "25.11"; # Pin to a specific version for stability
+  home.stateVersion = "25.05"; # Pin to a specific version for stability
 
   # Link configuration files from the 'dotfiles' directory
   home.file = {
@@ -67,10 +67,8 @@
   # Git identity for root sessions
   programs.git = {
     enable = true;
-    settings = {
-      user.name = "ad-archer";
-      user.email = "antonioarcher.dev@gmail.com";
-    };
+    userName = "ad-archer";
+    userEmail = "antonioarcher.dev@gmail.com";
   };
 
   # Let home-manager manage its own files

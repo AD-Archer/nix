@@ -7,29 +7,29 @@
     gcc
     fastfetch
     gpaste
-    pokemon-colorscripts
+    # pokemon-colorscripts  # Not in nixpkgs
     fzf
-    bitwarden-desktop
-    dbvisualizer
-    ulauncher
-    linux-wallpaperengine
+    # bitwarden-desktop  # Not in nixpkgs
+    # dbvisualizer  # Not in nixpkgs
+    # ulauncher  # Removed - requires building webkitgtk from source
+    # linux-wallengine  # Not in nixpkgs
     # Terminal tools
     tmux
     curl
     btop
     bat
     lazygit
-    vimPlugins.nvchad
+    # vimPlugins.nvchad  # Not available
 
     # Dev
-    codex
-    nodePackages.vercel
-    code-cursor
+    # codex  # Not in nixpkgs
+    # nodePackages.vercel  # Not in nixpkgs
+    # code-cursor  # Not in nixpkgs
     git
     neovim
     pnpm
     nodejs
-    vscode
+    # vscode  # Not available
     python3
     opencode
     go

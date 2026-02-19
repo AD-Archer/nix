@@ -16,7 +16,9 @@
   } ];
 
 
-  boot.loader.systemd-boot.enable = true;
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "nodev";
+  boot.loader.grub.efiSupport = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "hypr";
@@ -66,8 +68,12 @@ programs.steam = {
   
   # Explicitly enable Hyprland so GDM has a launchable session and the binary is on PATH
   programs.hyprland.enable = true;
-  services.desktopManager.gnome.enable = true;
-  services.desktopManager.gnome.sessionPath = [ pkgs.gpaste ];
+
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
+
+
+
   programs.gpaste.enable = true;
   # Keep GNOME but drop its default terminal/browser
   environment.gnome.excludePackages = with pkgs; [
@@ -90,6 +96,11 @@ programs.steam = {
 
   nixpkgs.config.allowUnfree = true;
 
+  # Allow specific insecure packages needed by some apps
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-36.9.5"
+  ];
+
   fonts.packages = with pkgs; [
     nerd-fonts.fira-code
   ];
@@ -97,28 +108,7 @@ programs.steam = {
   # SDDM theme, packages, and install script moved to ./modules/display-manager.nix
   # See ./modules/display-manager.nix for theme and SDDM-related configuration
   
-
-
-  services.logind = {
-    settings = {
-      Login = {
-        # Let logind handle lid close so the machine actually sleeps,
-        # and hypridle can run its before/after sleep hooks reliably.
-        HandlePowerKey = "ignore";
-        HandleLidSwitch = "hibernate";
-        HandleLidSwitchExternalPower = "suspend";
-        # Common default: do not suspend when docked/closed with external display.
-        HandleLidSwitchDocked = "ignore";
-      };
-    };
-  };
-
-  # -- Hyprland Add-on --
-  # This integrates the local hyprland add-on as an optional module. It will import and
-  # enable only the `hyprland` and `packages` modules from `./modules/hyprland`.
-  # It DOES NOT automatically enable any display manager or create users.
-  # To activate, set `hyprlandAddon.enable = true;` below.
-  hyprlandAddon.enable = true;
+  hyprlandAddon.enable = false;
 
   # Auto git backup of /etc/nixos after successful activation (e.g., nixos-rebuild switch)
   system.activationScripts.autoBackup = ''

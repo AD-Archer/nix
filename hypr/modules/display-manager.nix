@@ -3,17 +3,17 @@
 {
   # Display manager and SDDM theme config
 
-  services.xserver.enable = true;
-
-  services.displayManager = {
-    gdm.enable = true;
-    sddm = {
-      enable = false;
-      wayland.enable = true;
-      theme = "sugar-dark";
-    };
-    sessionPackages = [ pkgs.hyprland ];
-  };
+  #services.xserver.enable = true;
+  #
+  # services.displayManager = {
+  #   sddm = {
+  #     enable = true;
+  #     wayland.enable = true;
+  #     theme = "sugar-dark";
+  #   };
+  #   sessionPackages = [ pkgs.hyprland ];
+  # };
+  #
 
   # Use explicit pkgs.* references to avoid evaluation-time undefined variable errors
   environment.systemPackages = [

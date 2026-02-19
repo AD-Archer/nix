@@ -2,10 +2,9 @@
   description = "My Laptop Nixos Flake";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "nixpkgs/nixos-25.05";
     home-manager = {
-      url = "github:nix-community/home-manager";
-      # Ensure Home Manager uses the same nixpkgs input (avoid release mismatch warnings)
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-flatpak = {
@@ -15,10 +14,13 @@
       url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    dms.url = "github:AvengeMedia/DankMaterialShell";
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, home-manager, nix-flatpak ? null, ... }@inputs: {
+  outputs = { nixpkgs, home-manager, nix-flatpak ? null, quickshell ? null, dms ? null, ... }@inputs: {
     nixosConfigurations.hypr = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };

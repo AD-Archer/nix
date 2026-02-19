@@ -5,14 +5,15 @@ let
 in
 
 {
-  imports = [
-    inputs.dms.homeModules.dank-material-shell
-  ];
+  # DMS is disabled - uncomment to enable
+  # imports = [
+  #   inputs.dms.homeModules.dank-material-shell
+  # ];
 
-  programs.dank-material-shell.enable = true;
+  # programs.dank-material-shell.enable = true;
 
   home.sessionVariables = {
-    QS_CONFIG_NAME = "dms";
+    # QS_CONFIG_NAME = "dms";  # Only needed for DMS
 
     # App launchers (rofi drun, etc.) discover apps via .desktop files.
     # On NixOS these live under /run/current-system/sw/share/applications, which is
@@ -41,16 +42,16 @@ in
     XDG_SESSION_DESKTOP = config.home.sessionVariables.XDG_SESSION_DESKTOP;
     XDG_SESSION_TYPE = config.home.sessionVariables.XDG_SESSION_TYPE;
   };
-  programs.dank-material-shell.systemd.enable = true;
+  # programs.dank-material-shell.systemd.enable = true;
 
   # Make `qs` able to find the DMS config by name (`qs -c dms`) via XDG config paths.
-  xdg.configFile."quickshell/dms" = {
-    source = "${inputs.dms.packages.${pkgs.stdenv.hostPlatform.system}.dms-shell}/share/quickshell/dms";
-    recursive = true;
-  };
+  # xdg.configFile."quickshell/dms" = {
+  #   source = "${inputs.dms.packages.${pkgs.stdenv.hostPlatform.system}.dms-shell}/share/quickshell/dms";
+  #   recursive = true;
+  # };
 
   # Home Manager settings
-  home.stateVersion = "25.11"; # Pin to a specific version for stability
+  home.stateVersion = "25.05"; # Pin to a specific version for stability
 
   # Link configuration files from the 'dotfiles' directory
   home.file = {
@@ -133,10 +134,8 @@ in
   # Git identity (managed by Home Manager instead of manual global config)
   programs.git = {
     enable = true;
-    settings = {
-      user.name = "ad-archer";
-      user.email = "antonioarcher.dev@gmail.com";
-    };
+    userName = "ad-archer";
+    userEmail = "antonioarcher.dev@gmail.com";
   };
 
   # Rofi launcher configuration
