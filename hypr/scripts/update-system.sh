@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-NIXOS_DIR="/etc/nixos"
+NIXOS_DIR="/etc/nixos/hypr"
 
 # Colors for output
 RED='\033[0;31m'

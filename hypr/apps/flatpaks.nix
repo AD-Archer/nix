@@ -1,9 +1,16 @@
 { config, pkgs, lib, ... }:
 {
-  services.flatpak.remotes = [{
-    name = "flathub";
-    location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
-  }];
+  services.flatpak.remotes = [
+    {
+      name = "flathub";
+      location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
+    }
+    {
+      # Personal remote 
+      name = "adarcher-rustysound";
+      location = "https://ad-archer.github.io/linux-packages/rustysound.flatpakrepo";
+    }
+  ];
 
   services.flatpak.packages = [
     # Browsers
@@ -21,6 +28,7 @@
     "org.gnome.Todo"
     "io.github.qwersyk.Newelle"
     "io.github.Foldex.AdwSteamGtk"
+    "org.flatpak.Builder"
 
     # Gaming
     "org.vinegarhq.Sober"
@@ -46,6 +54,12 @@
 
     # Video Conferencing
     "us.zoom.Zoom"
+
+    # Music
+    {
+      appId = "app.adarcher.rustysound";
+      origin = "adarcher-rustysound";
+    }
 
     # Graveyard
     #"app.zen_browser.zen"

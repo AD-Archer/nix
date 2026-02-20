@@ -65,10 +65,10 @@ in
   # Provide helper scripts in the user's profile (available in $HOME/.nix-profile/bin)
   home.packages = with pkgs; [
     (writeScriptBin "update-quickshell" ''#!/usr/bin/env bash
-      exec /etc/nixos/scripts/update-quickshell.sh "$@"
+      exec /etc/nixos/hypr/scripts/update-quickshell.sh "$@"
     '')
     (writeScriptBin "update-system" ''#!/usr/bin/env bash
-      exec /etc/nixos/scripts/update-system.sh "$@"
+      exec /etc/nixos/hypr/scripts/update-system.sh "$@"
     '')
   ];
 
@@ -99,9 +99,9 @@ in
       oc = "opencode";
       claer = "clear";
       qs = "command qs";
-      rebuild = "cd /etc/nixos && sudo nixos-rebuild switch --flake .#hypr";
-      update-qs = "/etc/nixos/scripts/update-quickshell.sh";
-      update-system = "/etc/nixos/scripts/update-system.sh";
+      rebuild = "cd /etc/nixos/hypr && sudo nixos-rebuild switch --flake .#hypr";
+      update-qs = "/etc/nixos/hypr/scripts/update-quickshell.sh";
+      update-system = "/etc/nixos/hypr/scripts/update-system.sh";
     };
     oh-my-zsh = {
       enable = true;

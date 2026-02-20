@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-NIXOS_DIR="/etc/nixos"
+NIXOS_DIR="/etc/nixos/hypr"
 SOURCE_DIR="$NIXOS_DIR/sources/dots-hyprland"
 CONFIG_DIR="$NIXOS_DIR/modules/quickshell/config/ii"
 
@@ -43,5 +43,5 @@ echo "✅ QuickShell config updated!"
 echo ""
 echo "Next steps:"
 echo "  1. Review changes: git diff --cached"
-echo "  2. Rebuild: sudo nixos-rebuild switch --flake /etc/nixos"
+echo "  2. Rebuild: sudo nixos-rebuild switch --flake /etc/nixos/hypr#hypr"
 echo "  3. Restart quickshell or log out/in"

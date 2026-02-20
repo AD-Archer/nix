@@ -35,7 +35,9 @@
     opencode
     go
     usbutils
-    cargo
+    pacman
+    gh
+    unzip
     lua
 
     brave
@@ -43,8 +45,10 @@
     #Rust
     rustup
     cargo
-    rustc
-    rustfmt
+    openssl
+    pkg-config
+    just
+    flatpak-builder
 
 
 
