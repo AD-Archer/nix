@@ -16,12 +16,14 @@
     taps = [
       "siderolabs/tap"       # custom taps
       "tw93/tap"
+      "ad-archer/tap"
     ];
     brews = [
       "mas"  # Mac App Store CLI - kept in Homebrew for managing MAS apps
       "mole"
       "openssl@3"
       "libiconv"
+      "just"
     ];
 
     # GUI apps (casks). Keep these as casks since they are apps (not CLI tools).
@@ -38,8 +40,8 @@
       "postman"
       "obsidian"
       "joplin"
-      "vivaldi"
       "jordanbaird-ice"
+      "rustysound"
       "visual-studio-code"
 
       # Utilities
@@ -51,7 +53,8 @@
       "dbvisualizer"              # verify availability before enabling
 
       # Networking
-      "tailscale-app"                 
+      "tailscale-app"       
+      "brave-browser"          
     ];
 
     masApps = {
