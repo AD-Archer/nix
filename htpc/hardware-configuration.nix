@@ -29,4 +29,24 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  # Storage configuration - hardware specific
+  fileSystems."/mnt/disk1" = {
+    device = "/dev/disk/by-uuid/62f175a2-a944-45f2-9722-3c4b22a3a381";
+    fsType = "ext4";
+    options = [ "defaults" ];
+  };
+
+  fileSystems."/mnt/disk2" = {
+    device = "/dev/disk/by-uuid/586c6c9a-6b90-4065-8a2a-bb7981d85ad1";
+    fsType = "ext4";
+    options = [ "defaults" ];
+  };
+
+  fileSystems."/mnt/disk3" = {
+    device = "/dev/disk/by-uuid/108f0b0c-4390-460c-84de-e48077cbe2d3";
+    fsType = "ext4";
+    options = [ "defaults" ];
+  };
+
 }

@@ -1,3 +1,0 @@
-# SSH config placeholder (copied from hypr)
-Host *
-  StrictHostKeyChecking no

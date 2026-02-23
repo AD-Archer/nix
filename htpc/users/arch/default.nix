@@ -36,11 +36,4 @@
   };
 
   home.packages = with pkgs; [ zoxide fzf eza bat pnpm nodejs ];
-
-  home.file = {
-  ".config/kitty".source = ../../dotfiles/kitty;
-  ".config/nvim".source = ../../dotfiles/nvim;
-  ".config/tmux".source = ../../dotfiles/tmux;
-  ".ssh/config".source = ../../dotfiles/ssh/config;
-  };
 }
