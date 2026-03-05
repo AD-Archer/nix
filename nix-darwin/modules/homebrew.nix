@@ -24,6 +24,10 @@
       "openssl@3"
       "libiconv"
       "just"
+      "lsd"
+      "atuin"
+      "direnv"
+      "p7zip"
     ];
 
     # GUI apps (casks). Keep these as casks since they are apps (not CLI tools).
@@ -49,7 +53,7 @@
       "obs"
       "appcleaner"                # comment out to skip
       "the-unarchiver"            # comment out to skip
-      "raspberry-pi-imager"       # comment out to skip
+      # "raspberry-pi-imager"       # comment out to skip
       "dbvisualizer"              # verify availability before enabling
 
       # Networking
