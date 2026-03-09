@@ -25,6 +25,8 @@
       "libiconv"
       "just"
       "lsd"
+      "infisical"
+      "ollama"
       "atuin"
       "direnv"
       "p7zip"
