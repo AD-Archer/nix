@@ -66,6 +66,8 @@
     masApps = {
     #   "Slack" = 803453959;
       "bitwarden" = 1352778147;
+      "homea-menu bar"= 6758070650; 
+      "home assistant" = 1099568401;
     };
   };
 }
