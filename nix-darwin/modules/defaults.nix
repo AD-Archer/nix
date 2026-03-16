@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 {
   # Primary user for nix-darwin options that require it
-  system.primaryUser = "archer"; 
+  system.primaryUser = "arch"; 
 
   # Security
   security.pam.services.sudo_local.touchIdAuth = true;
