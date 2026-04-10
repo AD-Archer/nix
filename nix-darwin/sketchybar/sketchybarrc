@@ -1,95 +1,35 @@
-#!/bin/bash
+#!/Users/arch/.local/share/sketchybar_lua/lua
 
-PLUGIN_DIR="$CONFIG_DIR/plugins"
+local user = os.getenv("USER")
+local config_dir = os.getenv("CONFIG_DIR") or ("/Users/" .. user .. "/.config/sketchybar")
+local lua_module_dir = "/Users/" .. user .. "/.local/share/sketchybar_lua"
 
-BAR_BG=0xcc101418
-ITEM_BG=0xaa1b252f
-ACCENT=0xff7dc4e4
-TEXT=0xffe6edf3
-MUTED=0xff94a3b8
-DARK=0xff101418
+os.execute(string.format(
+  '[ -d "%s" ] || (' ..
+  '/usr/bin/git clone https://github.com/FelixKratz/SbarLua.git /tmp/SbarLua && ' ..
+  'cd /tmp/SbarLua && /usr/bin/make install && ' ..
+  '/bin/cp /tmp/SbarLua/lua-5.5.0/src/lua "%s/lua" && ' ..
+  'rm -rf /tmp/SbarLua' ..
+  ')',
+  lua_module_dir,
+  lua_module_dir
+))
 
-if [ -n "$HACK_NERD_FONT" ] && [ -f "$HACK_NERD_FONT" ]; then
-  sketchybar --load-font "$HACK_NERD_FONT"
-fi
+package.path = table.concat({
+  package.path,
+  config_dir .. "/?.lua",
+  config_dir .. "/?/init.lua",
+}, ";")
 
-sketchybar --bar \
-  position=top \
-  height=34 \
-  y_offset=6 \
-  blur_radius=30 \
-  color=$BAR_BG \
-  sticky=on \
-  topmost=window \
-  corner_radius=12
+package.cpath = table.concat({
+  package.cpath,
+  lua_module_dir .. "/?.so",
+}, ";")
 
-default=(
-  padding_left=6
-  padding_right=6
-  icon.font="Hack Nerd Font:Bold:15.0"
-  label.font="Hack Nerd Font:Bold:13.0"
-  icon.color=$TEXT
-  label.color=$TEXT
-  icon.padding_left=8
-  icon.padding_right=4
-  label.padding_left=4
-  label.padding_right=10
-  background.color=$ITEM_BG
-  background.corner_radius=10
-  background.height=26
-)
-sketchybar --default "${default[@]}"
+sbar = require("sketchybar")
 
-SPACE_ICONS=("1" "2" "3" "4" "5" "6" "7" "8" "9" "10")
-for i in "${!SPACE_ICONS[@]}"; do
-  sid="$(($i + 1))"
-  sketchybar --add space "space.$sid" left \
-             --set "space.$sid" \
-               space="$sid" \
-               icon="${SPACE_ICONS[i]}" \
-               label.drawing=off \
-               script="$PLUGIN_DIR/space.sh" \
-               click_script="yabai -m space --focus $sid"
-done
-
-sketchybar --add item divider left \
-           --set divider \
-             icon="" \
-             label.drawing=off \
-             background.drawing=off \
-             icon.color=$MUTED \
-           --add item front_app left \
-           --set front_app \
-             icon=󰣆 \
-             icon.color=$ACCENT \
-             label.color=$TEXT \
-             script="$PLUGIN_DIR/front_app.sh" \
-           --subscribe front_app front_app_switched
-
-sketchybar --add item battery right \
-           --set battery \
-             update_freq=120 \
-             icon.color=$ACCENT \
-             label.color=$TEXT \
-             script="$PLUGIN_DIR/battery.sh" \
-           --subscribe battery system_woke power_source_change \
-           --add item volume right \
-           --set volume \
-             icon.color=$ACCENT \
-             label.color=$TEXT \
-             script="$PLUGIN_DIR/volume.sh" \
-           --subscribe volume volume_change \
-           --add item clock right \
-           --set clock \
-             update_freq=10 \
-             icon=󰃰 \
-             icon.color=$ACCENT \
-             label.color=$TEXT \
-             script="$PLUGIN_DIR/clock.sh"
-
-sketchybar --update
-
-NAME=front_app "$PLUGIN_DIR/front_app.sh"
-NAME=clock "$PLUGIN_DIR/clock.sh"
-NAME=volume "$PLUGIN_DIR/volume.sh"
-NAME=battery "$PLUGIN_DIR/battery.sh"
+sbar.begin_config()
+require("init")
+sbar.hotload(true)
+sbar.end_config()
+sbar.event_loop()

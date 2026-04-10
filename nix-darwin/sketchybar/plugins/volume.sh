@@ -1,6 +1,7 @@
 #!/bin/sh
 
-if [ "$SENDER" = "volume_change" ] && [ -n "$INFO" ]; then
+# The volume_change event supplies $INFO variable with the new volume
+if [ "$SENDER" = "volume_change" ]; then
   VOLUME="$INFO"
 else
   VOLUME="$(osascript -e 'output volume of (get volume settings)' 2>/dev/null)"

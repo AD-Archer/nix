@@ -1,9 +1,10 @@
 #!/bin/sh
 
-if [ -n "$INFO" ]; then
-  APP_NAME="$INFO"
+# The front_app_switched event supplies $INFO with the name of the new app
+if [ "$SENDER" = "front_app_switched" ]; then
+  sketchybar --set "$NAME" label="$INFO"
 else
-  APP_NAME="$(yabai -m query --windows --window 2>/dev/null | jq -r '.app // "Desktop"')"
+  # Fallback: get current app name using yabai query
+  APP_NAME=$(yabai -m query --windows --window | jq -r '.app')
+  sketchybar --set "$NAME" label="${APP_NAME:-"Desktop"}"
 fi
-
-sketchybar --set "$NAME" label="$APP_NAME"
