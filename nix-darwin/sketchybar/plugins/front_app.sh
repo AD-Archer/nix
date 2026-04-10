@@ -5,6 +5,6 @@ if [ "$SENDER" = "front_app_switched" ]; then
   sketchybar --set "$NAME" label="$INFO"
 else
   # Fallback: get current app name using yabai query
-  APP_NAME=$(yabai -m query --windows --window | jq -r '.app')
+  APP_NAME=$(yabai -m query --windows --window 2>/dev/null | jq -r '.app // "Desktop"')
   sketchybar --set "$NAME" label="${APP_NAME:-"Desktop"}"
 fi

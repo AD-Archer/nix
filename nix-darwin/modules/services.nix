@@ -7,7 +7,7 @@ let
   sketchybarPath = lib.makeBinPath [
     pkgs.sketchybar
     pkgs.yabai
-    pkgs.lua
+    pkgs.bash
     pkgs.jq
     pkgs.coreutils
     pkgs.gnugrep
@@ -44,7 +44,7 @@ in
       path = [
         pkgs.sketchybar
         pkgs.yabai
-        pkgs.lua
+        pkgs.bash
         pkgs.jq
         pkgs.coreutils
         pkgs.gnugrep
@@ -60,48 +60,8 @@ in
         StandardErrorPath = "${userHome}/Library/Logs/sketchybar.err.log";
       };
       script = ''
-        exec ${pkgs.sketchybar}/bin/sketchybar
-      '';
-    };
-
-    sketchybarLua = {
-      path = [
-        pkgs.sketchybar
-        pkgs.yabai
-        pkgs.lua
-        pkgs.jq
-        pkgs.coreutils
-        pkgs.gnugrep
-        pkgs.gawk
-      ];
-      environment.HACK_NERD_FONT = hackNerdFont;
-      environment.PATH = "${shellPath}:${sketchybarPath}";
-      serviceConfig = {
-        KeepAlive = true;
-        ProcessType = "Interactive";
-        RunAtLoad = true;
-        StandardOutPath = "${userHome}/Library/Logs/sketchybar-lua.log";
-        StandardErrorPath = "${userHome}/Library/Logs/sketchybar-lua.err.log";
-      };
-      script = ''
         export CONFIG_DIR="${repoRoot}/sketchybar"
-        LUA_HOME="${userHome}/.local/share/sketchybar_lua"
-
-        if [ ! -x "$LUA_HOME/lua" ] || [ ! -f "$LUA_HOME/sketchybar.so" ]; then
-          /bin/rm -rf /tmp/SbarLua
-          /usr/bin/git clone https://github.com/FelixKratz/SbarLua.git /tmp/SbarLua
-          /usr/bin/perl -0pi -e 's/cd \$\(LUA_DIR\) && make/cd \$\(LUA_DIR\) && make generic/' /tmp/SbarLua/makefile
-          (cd /tmp/SbarLua && /usr/bin/make install)
-          /bin/mkdir -p "$LUA_HOME"
-          /bin/cp /tmp/SbarLua/lua-5.5.0/src/lua "$LUA_HOME/lua"
-          /bin/rm -rf /tmp/SbarLua
-        fi
-
-        while ! ${pkgs.sketchybar}/bin/sketchybar --query bar >/dev/null 2>&1; do
-          sleep 1
-        done
-
-        exec "$LUA_HOME/lua" "${repoRoot}/sketchybar/sketchybarrc"
+        exec ${pkgs.sketchybar}/bin/sketchybar --config "${repoRoot}/sketchybar/sketchybarrc"
       '';
     };
 

@@ -1,35 +1,155 @@
-#!/Users/arch/.local/share/sketchybar_lua/lua
+#!/bin/bash
 
-local user = os.getenv("USER")
-local config_dir = os.getenv("CONFIG_DIR") or ("/Users/" .. user .. "/.config/sketchybar")
-local lua_module_dir = "/Users/" .. user .. "/.local/share/sketchybar_lua"
+PLUGIN_DIR="${CONFIG_DIR:-$(cd "$(dirname "$0")" && pwd)}/plugins"
 
-os.execute(string.format(
-  '[ -d "%s" ] || (' ..
-  '/usr/bin/git clone https://github.com/FelixKratz/SbarLua.git /tmp/SbarLua && ' ..
-  'cd /tmp/SbarLua && /usr/bin/make install && ' ..
-  '/bin/cp /tmp/SbarLua/lua-5.5.0/src/lua "%s/lua" && ' ..
-  'rm -rf /tmp/SbarLua' ..
-  ')',
-  lua_module_dir,
-  lua_module_dir
-))
+BAR_BG=0xf0181819
+BAR_BORDER=0xff2c2e34
+ITEM_BG=0xff1d1b2d
+ITEM_BORDER=0x33efc2fc
+TEXT=0xffffffff
+MUTED=0xff7f8490
+ACCENT=0xffb482c2
+GREEN=0xff9ed072
+YELLOW=0xffe7c664
+ORANGE=0xfff39660
+RED=0xfffc5d7c
 
-package.path = table.concat({
-  package.path,
-  config_dir .. "/?.lua",
-  config_dir .. "/?/init.lua",
-}, ";")
+sketchybar --bar \
+  position=top \
+  topmost=window \
+  sticky=on \
+  height=30 \
+  y_offset=2 \
+  blur_radius=20 \
+  color=$BAR_BG \
+  border_color=$BAR_BORDER \
+  shadow=on \
+  padding_left=10 \
+  padding_right=10
 
-package.cpath = table.concat({
-  package.cpath,
-  lua_module_dir .. "/?.so",
-}, ";")
+default=(
+  updates=on
+  padding_left=4
+  padding_right=4
+  icon.color=$TEXT
+  label.color=$TEXT
+  icon.font="Hack Nerd Font:Bold:15.0"
+  label.font="SF Pro:Semibold:13.0"
+  background.color=$ITEM_BG
+  background.border_width=0
+  background.border_color=$ITEM_BORDER
+  background.corner_radius=6
+  background.height=24
+  scroll_texts=on
+)
+sketchybar --default "${default[@]}"
 
-sbar = require("sketchybar")
+spaces=()
+SPACE_IDS="$(yabai -m query --spaces 2>/dev/null | jq -r '.[].index' 2>/dev/null)"
 
-sbar.begin_config()
-require("init")
-sbar.hotload(true)
-sbar.end_config()
-sbar.event_loop()
+for sid in $SPACE_IDS; do
+  name="space.$sid"
+  spaces+=("$name")
+  sketchybar --add space "$name" left \
+             --set "$name" \
+               associated_space="$sid" \
+               icon="$sid" \
+               label.drawing=off \
+               icon.highlight_color=$RED \
+               icon.padding_left=10 \
+               icon.padding_right=10 \
+               script="$PLUGIN_DIR/space.sh" \
+               click_script="yabai -m space --focus $sid" \
+             --subscribe "$name" space_change mouse.clicked
+done
+
+sketchybar --add bracket spaces "${spaces[@]}" \
+           --set spaces \
+             background.color=$ITEM_BG \
+             background.drawing=on
+
+sketchybar --add item spaces.creator left \
+           --set spaces.creator \
+             icon="" \
+             label.drawing=off \
+             icon.padding_left=8 \
+             icon.padding_right=8 \
+             background.color=$ITEM_BG \
+             background.drawing=on \
+             click_script="yabai -m space --create"
+
+sketchybar --add item front_app center \
+           --set front_app \
+             icon.drawing=off \
+             label.font="SF Pro:Black:12.0" \
+             label.max_chars=50 \
+             background.color=$ITEM_BG \
+             background.drawing=on \
+             script="$PLUGIN_DIR/front_app.sh" \
+           --subscribe front_app front_app_switched
+
+sketchybar --add item volume_icon right \
+           --set volume_icon \
+             icon.padding_left=8 \
+             icon.padding_right=2 \
+             label.drawing=off \
+             background.drawing=off \
+             script="$PLUGIN_DIR/volume.sh" \
+           --subscribe volume_icon volume_change system_woke mouse.clicked mouse.scrolled \
+           --add item volume right \
+           --set volume \
+             label.font="SF Pro:Bold:12.0" \
+             label.padding_left=-1 \
+             label.padding_right=8 \
+             icon.drawing=off \
+             update_freq=5 \
+             background.drawing=off \
+             script="$PLUGIN_DIR/volume.sh" \
+           --subscribe volume volume_change system_woke mouse.clicked mouse.scrolled
+
+sketchybar --add bracket volume_bracket volume_icon volume \
+           --set volume_bracket \
+             background.color=$ITEM_BG \
+             background.drawing=on
+
+sketchybar --add item battery right \
+           --set battery \
+             icon.padding_left=8 \
+             icon.padding_right=0 \
+             label.font="SF Pro:Bold:12.0" \
+             label.padding_left=6 \
+             label.padding_right=8 \
+             update_freq=120 \
+             script="$PLUGIN_DIR/battery.sh" \
+           --subscribe battery system_woke power_source_change mouse.clicked
+
+sketchybar --add bracket battery_bracket battery \
+           --set battery_bracket \
+             background.color=$ITEM_BG \
+             background.drawing=on
+
+sketchybar --add item calendar right \
+           --set calendar \
+             update_freq=30 \
+             icon.padding_left=8 \
+             icon.padding_right=4 \
+             label.padding_left=4 \
+             label.padding_right=10 \
+             script="$PLUGIN_DIR/clock.sh"
+
+sketchybar --add bracket calendar_bracket calendar \
+           --set calendar_bracket \
+             background.color=$ITEM_BG \
+             background.drawing=on
+
+sketchybar --update
+
+CURRENT_SPACE="$(yabai -m query --spaces --space 2>/dev/null | jq -r '.index // empty' 2>/dev/null)"
+for sid in $SPACE_IDS; do
+  NAME="space.$sid" SELECTED="$([ "$sid" = "$CURRENT_SPACE" ] && echo true || echo false)" "$PLUGIN_DIR/space.sh"
+done
+NAME=front_app "$PLUGIN_DIR/front_app.sh"
+NAME=volume "$PLUGIN_DIR/volume.sh"
+NAME=volume_icon "$PLUGIN_DIR/volume.sh"
+NAME=battery "$PLUGIN_DIR/battery.sh"
+NAME=calendar "$PLUGIN_DIR/clock.sh"

@@ -2,10 +2,12 @@
 
 if [ "$SELECTED" = "true" ] || [ "$SELECTED" = "on" ]; then
   sketchybar --animate sin 12 --set "$NAME" \
-    background.color=0xff7dc4e4 \
-    icon.color=0xff101418
+    background.drawing=on \
+    background.border_color=0xffffffff \
+    icon.color=0xfffc5d7c
 else
   sketchybar --animate sin 12 --set "$NAME" \
-    background.color=0xaa1b252f \
-    icon.color=0xffe6edf3
+    background.drawing=off \
+    background.border_color=0xe0313436 \
+    icon.color=0xffffffff
 fi

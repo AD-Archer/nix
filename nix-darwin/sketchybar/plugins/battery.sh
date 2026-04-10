@@ -1,7 +1,7 @@
 #!/bin/sh
 
-PERCENTAGE="$(pmset -g batt | grep -Eo '\d+%' | cut -d% -f1)"
-CHARGING="$(pmset -g batt | grep 'AC Power')"
+PERCENTAGE="$(/usr/bin/pmset -g batt | /usr/bin/grep -Eo '\d+%' | /usr/bin/cut -d% -f1)"
+CHARGING="$(/usr/bin/pmset -g batt | /usr/bin/grep 'AC Power')"
 
 if [ -z "$PERCENTAGE" ]; then
   exit 0
