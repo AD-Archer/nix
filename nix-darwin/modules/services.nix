@@ -96,7 +96,7 @@ in
         auto_balance = "on";
         window_placement = "second_child";
         window_gap = 10;
-        top_padding = 10;
+        top_padding = 45;
         bottom_padding = 10;
         left_padding = 10;
         right_padding = 10;
