@@ -25,7 +25,6 @@
       "libiconv"
       "just"
       "opencode"
-      "altserver"
       "yt-dlp"
       "libusb"
       "openssl"
@@ -61,7 +60,8 @@
       # "raspberry-pi-imager"       
       "dbvisualizer"              
       # Networking
-      "tailscale-app"       
+      "tailscale-app"
+      "altserver"     
       "brave-browser"          
     ];
 
