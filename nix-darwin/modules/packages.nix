@@ -9,7 +9,7 @@
     python3
     pipx      # python package runner
     wget
-    opencode
+    
     btop
     tmux
     bat

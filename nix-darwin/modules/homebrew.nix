@@ -14,7 +14,7 @@
     };
     # Taps - only add custom taps; avoid tapping homebrew/core or homebrew/cask (Homebrew handles them automatically)
     taps = [
-      "siderolabs/tap"       # custom taps
+      "siderolabs/tap" 
       "tw93/tap"
       "ad-archer/tap"
     ];
@@ -24,10 +24,11 @@
       "openssl@3"
       "libiconv"
       "just"
+      "opencode"
+      "altserver"
       "yt-dlp"
       "libusb"
       "openssl"
-      # "claude"
       "lsd"
       "infisical"
       "ollama"
@@ -40,9 +41,6 @@
     casks = [
       # Media & multimedia
       "vlc"
-      #"iina"
-      # "altserver"
-      # Productivity & communication
       "slack"
       "vesktop"
       "zoom"                     
@@ -58,11 +56,10 @@
       # Utilities
       "tailscale-app"
       "obs"
-      "appcleaner"                # comment out to skip
-      "the-unarchiver"            # comment out to skip
-      # "raspberry-pi-imager"       # comment out to skip
-      "dbvisualizer"              # verify availability before enabling
-
+      "appcleaner"                
+      "the-unarchiver"            
+      # "raspberry-pi-imager"       
+      "dbvisualizer"              
       # Networking
       "tailscale-app"       
       "brave-browser"          
@@ -73,6 +70,7 @@
       "bitwarden" = 1352778147;
       "homea-menu bar"= 6758070650; 
       "home assistant" = 1099568401;
+      "Notch" = 6737410946;
     };
   };
 }
