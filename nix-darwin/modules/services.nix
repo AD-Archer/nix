@@ -88,7 +88,7 @@ in
     openssh.enable = true;
 
     yabai = {
-      enable = true; # Set to true if you want a tiling window manager
+      enable = false; # Set to true if you want a tiling window manager
       package = pkgs.yabai;
       enableScriptingAddition = true;
       config = {

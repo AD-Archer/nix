@@ -51,6 +51,7 @@
       "jordanbaird-ice"
       "rustysound"
       "visual-studio-code"
+      "kid3"
 
       # Utilities
       "tailscale-app"
