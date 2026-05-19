@@ -7,8 +7,10 @@
   environment.systemPackages = with pkgs; [
     wget
     kitty
+    st
     gcc
     fastfetch
+    yt-dlp
     gpaste
     # pokemon-colorscripts  # Not in nixpkgs
     fzf
