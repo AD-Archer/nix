@@ -18,6 +18,10 @@ let
     pkgs.coreutils
   ];
   hackNerdFont = "${pkgs.nerd-fonts.hack}/share/fonts/truetype/NerdFonts/Hack/HackNerdFont-Bold.ttf";
+  
+  # Toggle these to enable/disable services
+  enableSketchybar = false;
+  enableBorders = true;
 in
 {
   environment.systemPackages = [
@@ -39,50 +43,53 @@ in
     spaces."spans-displays" = false;
   };
 
-  launchd.user.agents = {
-    sketchybar = {
-      path = [
-        pkgs.sketchybar
-        pkgs.yabai
-        pkgs.bash
-        pkgs.jq
-        pkgs.coreutils
-        pkgs.gnugrep
-        pkgs.gawk
-      ];
-      environment.HACK_NERD_FONT = hackNerdFont;
-      environment.PATH = "${shellPath}:${sketchybarPath}";
-      serviceConfig = {
-        KeepAlive = true;
-        ProcessType = "Interactive";
-        RunAtLoad = true;
-        StandardOutPath = "${userHome}/Library/Logs/sketchybar.log";
-        StandardErrorPath = "${userHome}/Library/Logs/sketchybar.err.log";
+  launchd.user.agents = lib.mkMerge [
+    (lib.mkIf enableSketchybar {
+      sketchybar = {
+        path = [
+          pkgs.sketchybar
+          pkgs.yabai
+          pkgs.bash
+          pkgs.jq
+          pkgs.coreutils
+          pkgs.gnugrep
+          pkgs.gawk
+        ];
+        environment.HACK_NERD_FONT = hackNerdFont;
+        environment.PATH = "${shellPath}:${sketchybarPath}";
+        serviceConfig = {
+          KeepAlive = true;
+          ProcessType = "Interactive";
+          RunAtLoad = true;
+          StandardOutPath = "${userHome}/Library/Logs/sketchybar.log";
+          StandardErrorPath = "${userHome}/Library/Logs/sketchybar.err.log";
+        };
+        script = ''
+          export CONFIG_DIR="${repoRoot}/sketchybar"
+          exec ${pkgs.sketchybar}/bin/sketchybar --config "${repoRoot}/sketchybar/sketchybarrc"
+        '';
       };
-      script = ''
-        export CONFIG_DIR="${repoRoot}/sketchybar"
-        exec ${pkgs.sketchybar}/bin/sketchybar --config "${repoRoot}/sketchybar/sketchybarrc"
-      '';
-    };
-
-    jankyborders = {
-      path = [
-        pkgs.jankyborders
-        pkgs.coreutils
-      ];
-      environment.PATH = "${shellPath}:${bordersPath}";
-      serviceConfig = {
-        KeepAlive = true;
-        ProcessType = "Interactive";
-        RunAtLoad = true;
-        StandardOutPath = "${userHome}/Library/Logs/jankyborders.log";
-        StandardErrorPath = "${userHome}/Library/Logs/jankyborders.err.log";
+    })
+    (lib.mkIf enableBorders {
+      jankyborders = {
+        path = [
+          pkgs.jankyborders
+          pkgs.coreutils
+        ];
+        environment.PATH = "${shellPath}:${bordersPath}";
+        serviceConfig = {
+          KeepAlive = true;
+          ProcessType = "Interactive";
+          RunAtLoad = true;
+          StandardOutPath = "${userHome}/Library/Logs/jankyborders.log";
+          StandardErrorPath = "${userHome}/Library/Logs/jankyborders.err.log";
+        };
+        script = ''
+          exec ${pkgs.runtimeShell} "${repoRoot}/borders/bordersrc"
+        '';
       };
-      script = ''
-        exec ${pkgs.runtimeShell} "${repoRoot}/borders/bordersrc"
-      '';
-    };
-  };
+    })
+  ];
 
   services = {
     openssh.enable = true;
