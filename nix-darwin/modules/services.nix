@@ -31,7 +31,7 @@ in
 
   # Keep the stock macOS menu bar out of the way when SketchyBar is running.
   system.defaults = {
-    NSGlobalDomain._HIHideMenuBar = true;
+    NSGlobalDomain._HIHideMenuBar = false;
     dock = {
       autohide = true;
       "autohide-delay" = 0.0;

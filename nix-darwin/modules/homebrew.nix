@@ -17,6 +17,7 @@
       "siderolabs/tap" 
       "tw93/tap"
       "ad-archer/tap"
+      "nohajc/anylinuxfs"
     ];
     brews = [
       "mas"  # Mac App Store CLI - kept in Homebrew for managing MAS apps
@@ -49,6 +50,7 @@
       "claude"
       "joplin"
       "jordanbaird-ice"
+      "anylinuxfs"
       "rustysound"
       "visual-studio-code"
       "kid3"
