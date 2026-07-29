@@ -1,14 +1,17 @@
 { config, pkgs, lib, ... }:
 {
-  services.flatpak.remotes = [{
-    name = "flathub";
-    location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
-  }
-  {
-    # Personal remote 
-    name = "adarcher-rustysound";
-    location = "https://ad-archer.github.io/linux-packages/rustysound.flatpakrepo";
-  }];
+  services.flatpak.enable = true;
+
+  services.flatpak.remotes = [
+    {
+      name = "flathub";
+      location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
+    }
+    {
+      name = "adarcher-rustysound";
+      location = "https://ad-archer.github.io/packages/rustysound.flatpakrepo";
+    }
+  ];
 
   services.flatpak.packages = [
     "com.brave.Browser"

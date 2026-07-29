@@ -1,14 +1,15 @@
 { config, pkgs, lib, ... }:
 {
+  services.flatpak.enable = true;
+
   services.flatpak.remotes = [
     {
       name = "flathub";
       location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
     }
     {
-      # Personal remote 
       name = "adarcher-rustysound";
-      location = "https://ad-archer.github.io/linux-packages/rustysound.flatpakrepo";
+      location = "https://ad-archer.github.io/packages/rustysound.flatpakrepo";
     }
   ];
 
@@ -51,6 +52,7 @@
     "org.gnome.Extensions"
     "io.github.pwr_solaar.solaar"
     "org.x.Warpinator"
+    "org.kde.kid3"
 
     # Video Conferencing
     "us.zoom.Zoom"

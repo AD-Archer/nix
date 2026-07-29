@@ -11,6 +11,7 @@
     gcc
     fastfetch
     yt-dlp
+    ffmpeg
     gpaste
     # pokemon-colorscripts  # Not in nixpkgs
     fzf
