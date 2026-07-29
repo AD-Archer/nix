@@ -59,7 +59,7 @@
 
     # Music
     {
-      appId = "app.adarcher.rustysound";
+      appId = "app.adarcher.rustysound//stable";
       origin = "adarcher-rustysound";
     }
 

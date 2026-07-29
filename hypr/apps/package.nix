@@ -20,6 +20,7 @@
     # linux-wallengine  # Not in nixpkgs
     # Terminal tools
     tmux
+    claude-code
     curl
     btop
     bat
