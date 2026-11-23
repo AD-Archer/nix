@@ -23,7 +23,6 @@
     lua
     luarocks
     rsync
-    neofetch
     figlet
     fastfetch
     ffmpeg    # multimedia CLI

@@ -10,7 +10,6 @@
     };
     global = {
       brewfile = true;
-      lockfiles = false;  # kept false to avoid `--no-lock` incompat issues
     };
     # Taps - only add custom taps; avoid tapping homebrew/core or homebrew/cask (Homebrew handles them automatically)
     taps = [
@@ -51,23 +50,19 @@
       "joplin"
       "prismlauncher"
       "minecraft"
-      "jordanbaird-ice@beta"
       "anylinuxfs"
       "rustysound"
       "visual-studio-code"
       "kid3"
 
       # Utilities
-      "tailscale-app"
       "obs"
       "appcleaner"                
       "the-unarchiver"            
       # "raspberry-pi-imager"       
       "dbvisualizer"              
       # Networking
-      "tailscale-app"
-      "altserver"     
-      "brave-browser"          
+      "altserver"             
     ];
 
     masApps = {

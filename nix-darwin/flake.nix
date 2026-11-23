@@ -171,6 +171,9 @@ fi
           alias grep='grep --color=auto'
           alias ..='cd ..'
           alias ...='cd ../..'
+
+          # zoxide: defines `z` (and `cd` is aliased to it above)
+          eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
         '';
       };
 
